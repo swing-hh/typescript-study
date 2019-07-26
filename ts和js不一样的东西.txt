@@ -1,0 +1,20 @@
+++ 跟js一样的问题，可以粗略的讲一下
+
+编译参数 稍微说一下  tsc编译参数.png
+关键字中js没有的  public，private，enum，any，static，implements，interface
+基础类型中的元组，枚举，viod，never,泛型，any 
+变量声明 类型断言，类型推断，变量作用域
+++运算符
+++条件语句
+++循环
+函数 可选参数，默认参数，剩余参数，函数重载
+++number
+++string
+++Array
+联合类型
+接口 重点一些
+类  implements继承接口使用
+++对象 鸭子类型 对象类型使用接口形式
+命名空间 namespace <reference path = "SomeFileName.ts" />命名空间的使用
+模块
+声明文件 ts中使用js库的声明文件 就是声明ts怎么去校验js文件
