@@ -1,0 +1,247 @@
+TypeScript 是 JavaScript 的一个超集，主要提供了类型系统和对 ES6 的支持
+
+阮一峰总结的优点
+ts增加了代码的可读性和可维护性
+    1.类型系统是最好的文档，大部分的函数定义之后就知道如何去使用
+    2.可以再编译期发现大部分的错误，提前暴露问题
+    3.增强编辑器和IDE的功能，包括代码补全，接口提示，跳转到定义，重构等
+
+ts非常的包容
+    1.是js的超集，.ts文件可以直接重命名为.ts文件
+    2.即使不显示定义类型，也能够自动做出**类型推断**
+    3.可以定义从简单到复杂的几乎一切类型
+    4.即使ts编译报错也能生成js文件
+    5.兼容第三方库，即使第三方库不是ts写的
+
+社区活跃
+    1.大部分第三方库都有土工给ts的类型定义文件
+    2.Google开发angular2就是使用ts写的
+    3.ts拥抱ES6规范，也支持ESNext草案的规范
+
+缺点
+    1.有一定的学习成本，需要理解接口，泛型，类，枚举等前端不熟悉的概念
+    2.短期可能会增加一些开发成本
+    3.继承到构建有一定的工作量
+    4.可能和一些库结合不是很完美
+
+使用:指定变量类型，:前有没有空格都可以
+发生错误也可以编译成js
+tsconfig.js 的使用 https://zhongsp.gitbooks.io/typescript-handbook/content/doc/handbook/tsconfig.json.html
+
+基础
+
+原始数据类型
+null和undefined是所有类型的子类型，所以一个变量是number，初始化设置null和undefined都可以
+void只是用来函数没有返回值使用
+
+任意值any
+普通类型赋值类型不允许修改，any类型则可以任意修改类型
+未声明类型的变量默认为any类型
+
+类型推论
+var a = 100
+a = 'str1' //则会报错，因为赋值未100的时候会推测出他的类型是number，之后再赋值string则会报错
+
+联合类型
+就是定义多个类型，使用|定义多个
+var b: string|number;
+b = 10;
+b = 'str1'; //编译时报错，赋值的时候也推断出一个类型
+
+对象类型--接口 interface
+接口定义：在面向对象语言中，接口是一个很重要的概念，它是行为的抽象，而具体如何行动需要由类(classes)去实现(implement).
+interface Person {
+    name: string;
+    age: number;
+}
+let tom: Person = { // 这样则会报错，因为tom要去实现person的定义，缺少，类型错误，多一些属性是都会编译错误的
+    name: 'Tom'
+};
+可选属性使用?
+interface Person {
+    name: string;
+    age?: number; // 这样实现age属性可以不存在
+}
+任意属性
+interface Person {
+    name: string;
+    age?: number;
+    [propName: string]: any; // 这样定义属性名是string类型，值any类型都可以
+}
+任意属性其他可选属性都属于他的子类，也得遵循他的类型
+interface Person {
+    name: string;
+    age?: number;
+    [propName: string]: string;
+}
+let tom: Person = {
+    name: 'Tom',
+    age: 25, // 报错，因为任意属性值规定未string类型
+    gender: 'male'
+};
+// 只读属性
+interface Person {
+    readonly id: number;
+    name: string;
+    age?: number;
+    [propName: string]: any;
+}
+let tom: Person = {
+    id: 89757,
+    name: 'Tom',
+    gender: 'male'
+};
+
+tom.id = 9527; //报错 属性是只读的，不可以赋值
+
+数组类型
+使用类型[]的方式定义
+let fibonacci: number[] = [1, 1, 2, 3, 5]; // number类型的数组
+let fibonacci: number[] = [1, '1', 2, 3, 5]; // 报错，因为出现string类型
+泛型
+可以使用Array<elemType>来表示数组
+let fibonacci: Array<number> = [1, 1, 2, 3, 5];
+用接口表示数组
+interface NumberArray {
+    [index: number]: number; // index的类型四number
+}
+let fibonacci: NumberArray = [1, 1, 2, 3, 5];
+常用的做法
+let list: any[] = ['Xcat Liu', 25, { website: 'http://xcatliu.com' }];
+类数组 像是arguments
+function sum() {
+    let args: number[] = arguments; // 编译错误
+}
+function sum() {
+    let args: IArguments = arguments;
+}
+常见的类数组都有自己接口的定义，如IArguments, NodeList, HTMLCollection
+
+函数的类型
+返回会校验输入输出 参数类型多少个都会校验，返回值类型也会校验 可选参数后边不允许在出现参数
+function fun(arg: argType, arg1: number=10,arg2?: argType):returnType{
+}
+function fun(arg: number, arg1: number|string): number{
+    return arg1+arg1;
+}
+使用ES6箭头函数也是一样，只是简化写法
+用接口方式定义函数的形式
+interface SearchFunc {
+    (source: string, subString: string): boolean; // 定义了参数类型和返回值类型
+}
+let mySearch: SearchFunc;
+mySearch = function(source: string, subString: string) {
+    return source.search(subString) !== -1;
+}
+剩余参数 数组
+function push(array, ...items) {
+    items.forEach(function(item) {
+        array.push(item);
+    });
+}
+push([], 1, 2, 3);
+重载 可以定义多次重载，以准确的表达输入数字返回数字，输入字符串返回字符串
+function reverse(x: number): number;
+function reverse(x: string): string;
+function reverse(x: number | string): number | string {
+    if (typeof x === 'number') {
+        return Number(x.toString().split('').reverse().join(''));
+    } else if (typeof x === 'string') {
+        return x.split('').reverse().join('');
+    }
+}
+
+类型断言
+语法 <类型>值 或 值 as 类型
+function getLength(something: string | number): number {
+    return something.length; // 会报错，因为number没有length方法
+}
+function getLength(something: string | number): number {
+    if (something.length) { // 报错，因为number类型的参数的化，没有length方法
+        return something.length;
+    } else {
+        return something.toString().length;
+    }
+}
+function getLength(something: string | number): number {
+    if ((<string>something).length) { // 使用断言方式 判断类型为string
+        return (<string>something).length;
+    } else {
+        return something.toString().length; // 非string
+    }
+}
+function toBoolean(something: string | number): boolean {
+    return <boolean>something; // 断言不是类型转换，报错
+}
+
+声明文件
+在ts中使用jquery jQuery('#foo')，在便一种ts并不知道$是个什么东西，这时我们需要使用declare var来定义它的类型
+declare var jQuery: (selector: string) => any; // declare var并没有定义真正的变量，只是全局定义了jQuery的类型，仅仅用于编译时检查，编译结果会删除
+jQuery('#foo');
+
+声明文件就是我们通常会把声明语句单独放到一个单独的文件jquery.d.ts中，这就是声明文件 
+declare var jQuery: (selector: string) => any; // jquery.d..ts
+声明文件必须以.d.ts结尾
+一般来说ts会解析项目中多有的*.ts文件，当夜也包含.d.ts结尾的文件，所以当我们将jquery.d..ts放到项目中时，所有的*.ts文件就都可以获得jquery的类型定义了
+
+第三方的声明文件 @types的使用方式很简单，可以在https://microsoft.github.io/TypeSearch/搜索并使用
+npm install @types/jquery --save-dev
+
+书写声明文件 
+当一个第三方库没有提供声明文件时，就需要我们自己书写声明文件了
+namespace 早期的使用，ES6的使用后都使用module关键字了，在声明文件中还是比较常用
+/// <reference types="jquery" /> 三斜线语法 随着ES6语法的广泛应用，已经不建议使用了
+源码如果时ts写的，则使用--declaration（简写 -d）就可以生成.d.ts文件
+查看@types:
+声明文件解决方案：https://www.jianshu.com/p/ec5dcdeed550
+
+内置对象
+一些内置对象参数ts已经做了定义，所以违反了定义则会编译错误
+
+进阶
+
+类型别名
+我们使用type给类型起一个新的名字
+type Name = string;
+var a:Name; //使用类型的别名
+
+字符串字面量类型 简单讲就是我们自定义的字符串类型
+type EventNames = 'click' | 'scroll' | 'mousemove';
+function handleEvent(ele: Element, event: EventNames) {
+    // do something
+}
+handleEvent(document.getElementById('hello'), 'scroll');  
+handleEvent(document.getElementById('world'), 'dbclick');  // 报错，因为没有dbclick类型
+
+元组 简单理解为多类型数组
+let xcatliu: [string, number] = ['Xcat Liu', 25]; // index 0为string，index 1为number
+xcatliu[0] = 'str1'
+xcatliu[1] = 15
+let xcatliu: [string, number] = ['Xcat Liu']; // 报错 因为有两个，index 0为number
+let xcatliu: [string, number]; // 不会报错,因为undefined时两个类型的子类型
+xcatliu = ['Xcat Liu', 25];
+xcatliu.push('http://xcatliu.com/'); // 不会报错
+xcatliu.push(true); // 超出类型范围报错
+
+枚举
+enum Days {Sun, Mon, Tue, Wed, Thu, Fri, Sat}; // 枚举成员会被赋值,从0开始 我理解根据键和值都能相互访问
+enum Days {Sun=0, Mon=1, Tue=2, Wed=3, Thu=4, Fri=5, Sat=6} // 默认设置为现在这个样子
+Days['Sun'] = 0; Days[0] = 'Sun'; 
+也可以手动赋值
+enum Days {Sun, Mon=2, Tue, Wed, Thu, Fri, Sat};
+那Sun对应的就是从默认0开始,Mon=2,Tue=3依次递增
+enum Days {Sun = 'sun1', Mon=2, Tue, Wed, Thu, Fri, Sat};
+也可以赋值字符串 可以Days['Sun'] = 'sun1', 但是Days['sun1']则会出错
+常数枚举
+const enum Days {Sun = 'sun1', Mon=2, Tue, Wed, Thu, Fri, Sat}; 这样在编译期就会删除,只是把结果赋值到了使用上
+var a = Days.Sun  编译成 var a = 0;
+外部枚举
+declare const enum Directions {
+    Up,
+    Down,
+    Left,
+    Right
+}
+let directions = [Directions.Up, Directions.Down, Directions.Left, Directions.Right];
+因为是常量,所以编译成直接结果
+var directions = [0 /* Up */, 1 /* Down */, 2 /* Left */, 3 /* Right */];
