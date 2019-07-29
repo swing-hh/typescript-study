@@ -245,3 +245,280 @@ declare const enum Directions {
 let directions = [Directions.Up, Directions.Down, Directions.Left, Directions.Right];
 因为是常量,所以编译成直接结果
 var directions = [0 /* Up */, 1 /* Down */, 2 /* Left */, 3 /* Right */];
+
+类
+JavaScript通过构造函数实现类的概念，通过原型链实现继承。在ES6中迎来了class
+ts出了实现ES6中的所有方法外还添加了一些新的用法
+ES6
+class Animal {
+    constructor(name) {
+        this.name = name;
+    }
+    sayHi() {
+        return `My name is ${this.name}`;
+    }
+}
+ES6继承
+class Cat extends Animal {
+    constructor(name) {
+        super(name); // 调用父类的 constructor(name)
+        console.log(this.name);
+    }
+    sayHi() {
+        return 'Meow, ' + super.sayHi(); // 调用父类的 sayHi()
+    }
+}
+存取器
+class Animal {
+    constructor(name) {
+        this.name = name;
+    }
+    get name() {
+        return 'Jack';
+    }
+    set name(value) {
+        console.log('setter: ' + value);
+    }
+}
+静态方法
+class Animal {
+    static isAnimal(a) {
+        return a instanceof Animal;
+    }
+}
+ES7中的实现
+class Animal {
+    name = 'Jack'; // 等于this.name = 'Jack'
+
+    constructor() {
+        // ...
+    }
+}
+class Animal {
+    static num = 42; // 静态方法和属性
+
+    constructor() {
+        // ...
+    }
+}
+ts中的public private 和 protected
+public 公有的属性方法 任何地方都可以访问
+private 私有的属性方法，只有它自己能访问，不允许外部访问
+protected 受保护属性方法，自己，子类和父类可以访问
+class Animal {
+    private name;
+    public constructor(name) {
+        this.name = name;
+    }
+}
+let a = new Animal('Jack');
+console.log(a.name); // Jack 不是限制访问只是编译的时候有编译错误
+a.name = 'Tom';
+子类中不允许访问private修饰的属性和方法
+class Animal {
+    private name;
+    public constructor(name) {
+        this.name = name;
+    }
+}
+
+class Cat extends Animal {
+    constructor(name) {
+        super(name);
+        console.log(this.name); // 报错，访问不到子类的属性方法
+    }
+}
+抽象类
+abstract 用户定义抽象类和其中的抽象方法
+抽象类不允许实例化
+abstract class Animal {
+    public name;
+    public constructor(name) {
+        this.name = name;
+    }
+    public abstract sayHi();
+}
+let a = new Animal('Jack'); // 报错，抽象类不允许实例化
+抽象类中的抽象方法必须被子类实现
+abstract class Animal {
+    public name;
+    public constructor(name) {
+        this.name = name;
+    }
+    public abstract sayHi();
+}
+class Cat extends Animal { //报错，没有实现sayHi方法
+    public eat() { 
+        console.log(`${this.name} is eating.`);
+    }
+}
+let cat = new Cat('Tom');
+正确的使用抽象类的例子
+abstract class Animal {
+    public name;
+    public constructor(name) {
+        this.name = name;
+    }
+    public abstract sayHi();
+}
+class Cat extends Animal {
+    public sayHi() {
+        console.log(`Meow, My name is ${this.name}`);
+    }
+}
+let cat = new Cat('Tom');
+类的类型 给类添加类型，跟接口类似
+class Animal {
+    name: string; 
+    constructor(name: string) {
+        this.name = name;
+    }
+    sayHi(): string {
+      return `My name is ${this.name}`;
+    }
+}
+
+类与接口
+类实现接口
+interface Alarm {
+    alert();
+}
+class Door {
+}
+class SecurityDoor extends Door implements Alarm {
+    alert() {
+        console.log('SecurityDoor alert');
+    }
+}
+一个类可以实现多个接口
+interface Alarm {
+    alert();
+}
+interface Light {
+    lightOn();
+    lightOff();
+}
+class Car implements Alarm, Light {
+    alert() {
+        console.log('Car alert');
+    }
+    lightOn() {
+        console.log('Car light on');
+    }
+    lightOff() {
+        console.log('Car light off');
+    }
+}
+接口继承 使用extends实现
+interface Alarm {
+    alert();
+}
+interface LightableAlarm extends Alarm {
+    lightOn();
+    lightOff();
+}
+接口实现类
+class Point {
+    x: number;
+    y: number;
+}
+
+interface Point3d extends Point {
+    z: number;
+}
+let point3d: Point3d = {x: 1, y: 2, z: 3};
+混合类型
+interface SearchFunc {
+    (source: string, subString: string): boolean; 参数和返回值
+}
+
+let mySearch: SearchFunc;
+mySearch = function(source: string, subString: string) {
+    return source.search(subString) !== -1;
+}
+实现
+interface Counter {
+    (start: number): string;
+    interval: number;
+    reset(): void;
+}
+
+function getCounter(): Counter {
+    let counter = <Counter>function (start: number) { };
+    counter.interval = 123;
+    counter.reset = function () { };
+    return counter;
+}
+
+泛型
+泛型是指在定义函数，接口或类的时候，不预先指定具体类型，而是在使用的时候在指定类型的一种特性
+function createArray(length: number, value: any): Array<any> { // 使用了数组泛型Array<any>
+    let result = [];
+    for (let i = 0; i < length; i++) {
+        result[i] = value;
+    }
+    return result;
+}
+
+createArray(3, 'x'); // ['x', 'x', 'x']
+这段代码编译不会报错，但是一个显而易见的缺陷，它并没有定义返回值类型
+Array<any>允许数组每一项都为任意类型，但是我们预期返回值都是value类型
+function createArray<T>(length: number, value: T): Array<T> {
+    let result: T[] = [];
+    for (let i = 0; i < length; i++) {
+        result[i] = value;
+    }
+    return result;
+}
+createArray<string>(3, 'x'); // ['x', 'x', 'x']
+在函数名后添加<T>,其中T用来代表任意输入的类型，在后面的输入value：T和Array<T>中就可以使用了
+function createArray<T>(length: number, value: T): Array<T> { //类型也会自动推断出
+    let result: T[] = [];
+    for (let i = 0; i < length; i++) {
+        result[i] = value;
+    }
+    return result;
+}
+
+createArray(3, 'x'); // ['x', 'x', 'x']
+多个类型参数
+function swap<T, U>(tuple: [T, U]): [U, T] {
+    return [tuple[1], tuple[0]];
+}
+
+swap([7, 'seven']); // ['seven', 7]
+泛型约束
+function loggingIdentity<T>(arg: T): T {
+    console.log(arg.length); // 报错，因为类型不确定，所以.length不是属于所有类型的方法
+    return arg;
+}
+泛型继承
+interface Lengthwise {
+    length: number;
+}
+
+function loggingIdentity<T extends Lengthwise>(arg: T): T { // 使用接口约束了泛型，所以定义不会报错
+    console.log(arg.length);
+    return arg;
+}
+传入类型错误
+interface Lengthwise {
+    length: number;
+}
+
+function loggingIdentity<T extends Lengthwise>(arg: T): T {
+    console.log(arg.length);
+    return arg;
+}
+
+loggingIdentity(7); // 报错，泛型限制为具有length属性的
+多个类型参数之间相互约束
+function copyFields<T extends U, U>(target: T, source: U): T {
+    for (let id in source) {
+        target[id] = (<T>source)[id];
+    }
+    return target;
+}
+
+let x = { a: 1, b: 2, c: 3, d: 4 };
+copyFields(x, { b: 10, d: 20 }); // 因为T继承与U，所以T必须实现U才不会编译报错
