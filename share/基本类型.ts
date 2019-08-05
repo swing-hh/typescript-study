@@ -81,4 +81,18 @@ w = 10;
 let typeInfer = 'str'; // 类型推断为string
 // typeInfer = 10; // 报错 
 
-// 类型断言
+// 类型断言 语法<类型>值
+// function getLength(something: string | number): number {
+//     return something.length; // 报错，number没有length方法
+// }
+// 正确使用
+function getLength(something: string | number): number {
+    if (<string>something) {
+        return (<string>something).length; // 下边使用也必须使用类型断言
+    } else {
+        return something.toString().length;
+    }
+}
+function getBoolean(something: string | number | boolean): boolean { // 加入boolean,不报错
+    return <boolean>something; // 因为传入类型没有boolean类型报错
+}
