@@ -1,11 +1,11 @@
 // 布尔类型
 let isDone: boolean = false;
 
-// 数值
+// 数值类型
 let num: number = 10;
 let num1: number = 0xf00d; // 二进制，八进制，十进制，十六金总
 
-// 字符串
+// 字符串类型
 let str: string = 'Tom';
 
 // null/undefined 它两未任何类型的子类型，所以可以赋值给其他类型不报错
@@ -13,21 +13,26 @@ let num2: number = undefined;
 num2 = null;
 
 // never 抛出异常或者无法执行到的终点
-let x: never;
-x = (() => {
+let ne: never;
+ne = (() => {
     throw new Error('抛出错误');
 })()
-x = (() => {
+ne = (() => {
     while (true) { }
 })()
 
 // any任意类型 
 let y: any = 'str';
 y = 7;
-// 未声明的变量会被指定未any
+// 未声明的变量会被指定为any
 let z;
 z = 'str';
 z = 7;
+
+// 联合类型
+let unionType: string | number;
+unionType = 'str';
+unionType = 1;
 
 // 枚举
 // 我理解为键<=>值 
@@ -71,11 +76,6 @@ enum Color5 {
     Black = 2
 }
 console.log(Color5.Blue === Color5.Black); // true
-
-// 联合类型
-let w: string | number;
-w = 'str';
-w = 10;
 
 // 类型推断 定义的时候赋值则会产生类型推断，不赋值则推断成为any
 let typeInfer = 'str'; // 类型推断为string
