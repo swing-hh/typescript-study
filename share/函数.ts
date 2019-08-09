@@ -4,11 +4,6 @@ function sum(x: number): number {
     return x;
 }
 
-// 无返回值
-function sum1(x: number): void {
-    x++;
-}
-
 // 函数表达式
 let sum2 = function (x: number): number {
     return x;
@@ -17,6 +12,11 @@ let sum2 = function (x: number): number {
 // 箭头函数
 let sum3 = (x: number): number => {
     return x;
+}
+
+// 无返回值
+function sum1(x: number): void {
+    x++;
 }
 
 // 可选参数
@@ -51,15 +51,10 @@ function reverse(x: number | string): number | string {
     }
 }
 
-// 函数返回一个对象
-interface Counter {
-    (start: number): string;
-    interval: number;
-    reset(): void;
+// 接口定义函数
+interface SearchFunc {
+    (source: string, subString: string): boolean;
 }
-function getCounter(): Counter {
-    let counter = <Counter>function (start: number) { };
-    counter.interval = 123;
-    counter.reset = function () { };
-    return counter;
+let mySearch: SearchFunc = function (source: string, subString: string): boolean {
+    return source.search(subString) !== -1;
 }

@@ -79,12 +79,12 @@ console.log(Color5.Blue === Color5.Black); // true
 
 // 类型推断 定义的时候赋值则会产生类型推断，不赋值则推断成为any
 let typeInfer = 'str'; // 类型推断为string
-// typeInfer = 10; // 报错 
+typeInfer = 10; // 报错 
 
 // 类型断言 语法<类型>值
-// function getLength(something: string | number): number {
-//     return something.length; // 报错，number没有length方法
-// }
+function getLength(something: string | number): number {
+    return something.length; // 报错，number没有length方法
+}
 // 正确使用
 function getLength(something: string | number): number {
     if (<string>something) {

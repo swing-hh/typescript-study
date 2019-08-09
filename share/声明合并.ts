@@ -1,7 +1,7 @@
 // 函数重载 只能重载类型类型包含的,否则会编译报错
 function reverse(x: number): number;
 function reverse(x: string): string;
-function reverse(x: number | string): number | string {
+function reverse(x: number | string): number | string { // 去掉string类型报错，因为保佑包含重载得类型
     if (typeof x === 'number') {
         return Number(x.toString().split('').reverse().join(''));
     } else if (typeof x === 'string') {
